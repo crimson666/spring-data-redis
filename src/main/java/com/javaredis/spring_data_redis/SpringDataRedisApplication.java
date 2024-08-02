@@ -5,13 +5,19 @@ import com.javaredis.spring_data_redis.repository.ProductDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.javaredis.spring_data_redis.repository.ProductDao.HASH_KEY_PRODUCT;
+
 @SpringBootApplication
 @RestController
 @RequestMapping("/product")
+@EnableCaching
 public class SpringDataRedisApplication {
 
 	@Autowired
@@ -28,11 +34,13 @@ public class SpringDataRedisApplication {
 	}
 
 	@GetMapping("/{id}")
-	public Product getById(@PathVariable int id){
+	@Cacheable(key = "#id", value = HASH_KEY_PRODUCT,unless = "#result.price > 12")
+ 	public Product getById(@PathVariable int id){
 		return dao.findById(id);
 	}
 
 	@DeleteMapping("/{id}")
+	@CacheEvict(key = "#id", value = HASH_KEY_PRODUCT)
 	public String deleteById(@PathVariable int id){
 		return dao.delete(id);
 	}

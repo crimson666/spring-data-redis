@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 @Repository
@@ -22,6 +23,7 @@ public class ProductDao {
     }
 
     public Product findById(int Id){
+        System.out.println("Getting frm the DB");
         return (Product) template.opsForHash().get(HASH_KEY_PRODUCT,Id);
     }
 
